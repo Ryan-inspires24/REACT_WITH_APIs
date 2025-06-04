@@ -39,6 +39,7 @@ function HomePage() {
         const inputProps = {
             name: response.input_key,
             required: response.required
+           
         };
         switch (response.type) {
             case 'FREE_TEXT':
@@ -53,7 +54,26 @@ function HomePage() {
 
         }
     }
+    async function handleSubmit(e) {
+        e.preventDefault();
 
+        const submission = {
+            questionnaireId: id,
+            responses: Object.entries(formData).map(([key, value]) => ({
+                input_key: key,
+                value: value,
+            })),
+        };
+
+        try {
+            localStorage.setItem(`questionnaire_${id}`, JSON.stringify(submission));
+
+            alert("Saved locally in your browser!");
+        } catch (err) {
+            console.error(err);
+            alert("Error saving your responses.");
+        }
+    }
     return (
         <TemplatePage>
             <header>Questionaire form</header>
@@ -65,13 +85,17 @@ function HomePage() {
 
             {data && (
                 <form methods='POST' className="form-body">
+
                     {data.map((response) => (
-                        <div key={response.input_key}>
+                        <div key={response.input_key} className="form-group">
+
                             <p><label className="form-label">{response.label} <span className="required">{response.required ? '(*)' : ''}</span></label></p>
                             <p className="form-input">{displayInput(response)}</p>
                         </div>
                     ))}
                     <button type='submit' className="form-btn"> Submit</button>
+
+
                 </form>)}
         </TemplatePage>
     );
