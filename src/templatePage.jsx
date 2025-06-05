@@ -11,7 +11,8 @@ function TemplatePage(props) {
             </div>
             <nav className="page-nav">
 
-                <Link to='/15'>Home</Link>
+                <Link to='/15'>Questionaire</Link>
+                <Link to='/'>Home</Link>
 
 
             </nav>

@@ -63,6 +63,31 @@ main {
   font-weight: 600;
 }
 
+.instructions{
+  padding: 1.2em;
+  font-style: italic;
+  color: #b30000;
+}
+
+.idField{
+width: 100px;
+}
+
+p{
+  padding: 1em;
+}
+
+.id-btn {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+}
+
 @media (max-width: 768px) {
   .logo {
     font-size: 1.5rem;
@@ -78,3 +103,4 @@ main {
     padding: 1rem 0;
   }
 }
+
