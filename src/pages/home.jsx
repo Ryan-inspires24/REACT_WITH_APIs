@@ -38,48 +38,173 @@ function HomePage() {
     function displayInput(response) {
         const inputProps = {
             name: response.input_key,
-            required: response.required
-           
+            required: response.required,
         };
+
+        if (response.options && response.options.length > 0) {
+            return handleInputType(response.type.toLowerCase(), inputProps, response.options);
+        }
+
         switch (response.type) {
             case 'FREE_TEXT':
-                return <textarea {...inputProps} placeholder="you can input multiple lines.."></textarea>
+                return handleInputType("textarea", inputProps);
             case 'SIMPLE_TEXT':
-                return <input {...inputProps} type="text" />
+                return handleInputType("text", inputProps);
             case 'DATE_TIME':
-                return <input {...inputProps} type='datetime-local' />
+                return handleInputType("date_time", inputProps);
+            case 'FILE_UPLOAD':
+            case 'DOC_UPLOAD':
+                return handleInputType('upload', inputProps)
             default:
-                return <textarea {...inputProps}></textarea>
-
-
+                return handleInputType("textarea", inputProps);
         }
     }
-    async function handleSubmit(e) {
-        e.preventDefault();
 
-        const submission = {
-            questionnaireId: id,
-            responses: Object.entries(formData).map(([key, value]) => ({
-                input_key: key,
-                value: value,
-            })),
-        };
+    function handleInputType(input_type, inputProps, options = []) {
+        const normalizedOptions = normalizeOptions(options);
 
-        try {
-            localStorage.setItem(`questionnaire_${id}`, JSON.stringify(submission));
+        switch (input_type) {
+            case "textarea":
+                return <textarea {...inputProps} placeholder="You can input multiple lines..." />;
 
-            alert("Saved locally in your browser!");
-        } catch (err) {
-            console.error(err);
-            alert("Error saving your responses.");
+            case "text":
+                return <input {...inputProps} type="text" className="text-input" />;
+
+            case "date_time":
+                return <input {...inputProps} type="datetime-local" className="datetime-input" />;
+
+            case 'multiple_choice':
+            case "rating":
+            case 'radios':
+                return (
+                    <div className="single-choice-group">
+                        {normalizedOptions.map((option, index) => (
+                            <label key={index} className="single-choice-option">
+                                <input
+                                    {...inputProps}
+                                    type="radio"
+                                    value={option.value}
+                                    className="single-choice-input"
+                                />
+                                {option.label}
+                            </label>
+                        ))}
+                    </div>
+                );
+
+            case "dropdown":
+                return (
+                    <select {...inputProps} className="dropdown-input">
+                        <option value="">Select an option</option>
+                        {normalizedOptions.map((option, index) => (
+                            <option key={index} value={option.value}>{option.label}</option>
+                        ))}
+                    </select>
+                );
+            case 'checkboxes':
+                return (
+                    <div className="multiple-choice-group">
+                        {normalizedOptions.map((option, index) => (
+                            <label key={index} className="multiple-choice-option">
+                                <input
+                                    {...inputProps}
+                                    type="checkbox"
+                                    value={option.value}
+                                    className="multiple-choice-input"
+                                />
+                                {option.label}
+                            </label>
+                        ))}
+                    </div>
+                );
+            case 'upload':
+                return <input {...inputProps} className='file-input' type="file"/>
+            case 'boolean_question':
+                const trueOption = normalizedOptions[0];
+                return (
+                    <div className="boolean-choice-group">
+                        <label className="boolean-option">
+                            <input
+                                {...inputProps}
+                                type="radio"
+                                value={trueOption.trueValue}
+                                name={inputProps.name}
+                                className="boolean-input"
+                            />
+                            {trueOption.trueLabel}
+                        </label>
+                        <label className="boolean-option">
+                            <input
+                                {...inputProps}
+                                type="radio"
+                                value={trueOption.falseValue}
+                                name={inputProps.name}
+                                className="boolean-input"
+                            />
+                            {trueOption.falseLabel}
+                        </label>
+                    </div>
+                );
+            default:
+                return <textarea {...inputProps} placeholder="You can input multiple lines..." />;
+
         }
+
+
     }
+    function normalizeOptions(options) {
+        if (!Array.isArray(options)) return [];
+
+        const result = [];
+
+        for (const opt of options) {
+            if (typeof opt === 'string') {
+                result.push({ label: opt, value: opt });
+
+            } else if (typeof opt === 'object' && opt !== null) {
+                const keys = Object.keys(opt);
+
+                if (
+                    keys.includes("trueLabel") &&
+                    keys.includes("trueValue") &&
+                    keys.includes("falseLabel") &&
+                    keys.includes("falseValue")
+                ) {
+                    result.push({
+                        trueLabel: opt.trueLabel,
+                        trueValue: opt.trueValue,
+                        falseLabel: opt.falseLabel,
+                        falseValue: opt.falseValue
+                    });
+
+                } else if ("label" in opt && "value" in opt) {
+                    result.push({ label: opt.label, value: opt.value });
+
+                } else if (keys.includes("trueLabel") && keys.includes("trueValue")) {
+                    result.push({ label: opt.trueLabel, value: opt.trueValue });
+
+                } else if (keys.includes("falseLabel") && keys.includes("falseValue")) {
+                    result.push({ label: opt.falseLabel, value: opt.falseValue });
+
+                } else {
+                    for (const [key, value] of Object.entries(opt)) {
+                        result.push({ label: key, value });
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
     return (
         <TemplatePage>
             <header>Questionaire form</header>
             <p className="description">This is the questionnaire page number {id}.</p>
 
             {isLoading && <p>Questionnaire Loading...</p>}
+
+            {!data && <p>No Questions here!</p>}
 
             {isError && <p>Oops! Error loading this questionnaire.</p>}
 
@@ -90,7 +215,7 @@ function HomePage() {
                         <div key={response.input_key} className="form-group">
 
                             <p><label className="form-label">{response.label} <span className="required">{response.required ? '(*)' : ''}</span></label></p>
-                            <p className="form-input">{displayInput(response)}</p>
+                            <div className="form-input">{displayInput(response)}</div>
                         </div>
                     ))}
                     <button type='submit' className="form-btn"> Submit</button>

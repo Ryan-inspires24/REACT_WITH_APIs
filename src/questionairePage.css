@@ -9,6 +9,7 @@ header {
 .form-body {
     border-bottom: 2px solid salmon;
     padding: 2em;
+    text-align: center;
 }
 
 .description {
@@ -27,15 +28,16 @@ header {
 }
 
 input {
+    
     width: 250px;
-    height: 40px;
+    height: 50px;
     border: 1px solid rgb(100, 18, 18);
     border-radius: 8px;
 }
 
 textarea {
-    width: 300px;
-    height: 100px;
+    width: 400px;
+    height: 200px;
     border: 1px solid rgb(100, 18, 18);
     border-radius: 8px;
 
@@ -60,9 +62,111 @@ textarea {
     color: orange;
 }
 
+.single-choice-input{
+   display: flex;
+   flex-direction: column;
+   gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.single-choice-option{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color:pointer;
+    transition: color 0.3s ease;
+}
+
+.single-choice-option:hover{
+color: #a00000;
+}
+
+.single-choice-input, .boolean-input{
+    accent-color: #cc0000;
+    height: 18px;
+    width: 18px;
+    cursor: pointer;
+}
+.boolean-choice-group {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+}
+
+.boolean-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.boolean-input {
+    cursor: pointer;
+}
+
+.dropdown-input {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  color: #333;
+}
+.multiple-choice-group {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.multiple-choice-option {
+  display: flex;
+  text-align: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+.multiple-choice-option:hover {
+  background-color: #f0f0f0;
+}
+
+.multiple-choice-input {
+  width: 16px;
+  height: 16px;
+  accent-color: hsl(0, 92%, 38%); 
+  cursor: pointer;
+}
+
+.file-input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #b1626200;
+  font-size: 14px;
+  width: 300px;
+  cursor: pointer;
+}
+
+.file-input:hover {
+  border-color: #f95959;
+}
+
+
 @media(max-width:700px) {
+    *{
+        padding: 0;
+        margin-left: 0;
+
+    }
     .form-body {
-        padding: 0.8rem;
+        padding: 0rem;
         text-align: center;
     }
 

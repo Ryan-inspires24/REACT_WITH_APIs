@@ -10,10 +10,12 @@ function TemplatePage(props) {
                 RyanInspires
             </div>
             <nav className="page-nav">
+                <div className="container">
+                    <Link to='/15'>Questionaire</Link>
+                    <Link to='/'>Home</Link>
 
-                <Link to='/15'>Questionaire</Link>
-                <Link to='/'>Home</Link>
 
+                </div>
 
             </nav>
 
@@ -23,7 +25,10 @@ function TemplatePage(props) {
             </main>
 
             <footer className="footer">
-                <p>&copy; {new Date().getFullYear()} RyanInspires | All rights reserved.</p>
+                <div className="container">
+                    <p>&copy; {new Date().getFullYear()} RyanInspires | All rights reserved.</p>
+
+                </div>
             </footer>
 
         </div>

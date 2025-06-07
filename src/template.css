@@ -4,19 +4,37 @@
   padding: 0;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   font-size: 1em;
   line-height: 1.6;
   color: #1a1a1a;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-div {
+.container {
+  display: flex;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 1 1.5rem;
+    gap: 1.5rem;
+
+  ;
 }
+
+main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
 
 .logo {
   font-size: 2rem;
@@ -51,6 +69,22 @@ div {
 
 main {
   padding: 2rem 0;
+}
+.logo,
+.page-nav,
+.footer {
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+main.container {
+  flex: 1;
+  padding: 2rem 1.5rem;
 }
 
 .footer {
@@ -87,6 +121,7 @@ p{
     cursor: pointer;
 
 }
+
 
 @media (max-width: 768px) {
   .logo {
