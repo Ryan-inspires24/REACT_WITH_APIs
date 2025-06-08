@@ -29,16 +29,31 @@ function HomePage() {
 
         return responses;
     }
-    const { formData, setFormData } = useState({})
+    const [formData, setFormData] = useState({});
     const { data, isLoading, isError } = useQuery({
         queryKey: ['questionnaire', id],
         queryFn: () => fetchQuestionaire(id),
     });
 
+    function OnChange(e, response) {
+        const { name, value, type, files, } = e.target
+
+        setFormData((prev) => ({
+            ...prev,
+
+            [name]: {
+                input_key: name,
+                value: type === 'file' ? files[0] : value,
+                options: response.options || []
+                        }
+        }))
+    }
     function displayInput(response) {
         const inputProps = {
             name: response.input_key,
             required: response.required,
+            value: formData[response.input_key]?.value || '',
+            onChange: (e) => OnChange(e, response)
         };
 
         if (response.options && response.options.length > 0) {
@@ -118,7 +133,7 @@ function HomePage() {
                     </div>
                 );
             case 'upload':
-                return <input {...inputProps} className='file-input' type="file"/>
+                return <input {...inputProps} className='file-input' type="file" />
             case 'boolean_question':
                 const trueOption = normalizedOptions[0];
                 return (
@@ -197,6 +212,30 @@ function HomePage() {
         return result;
     }
 
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        const payload = {
+            questionnaireId: id,
+            responses: Object.values(formData)
+        };
+
+        try {
+            const res = await fetch('http://localhost:5000/api/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            console.log('Submission successful:', data);
+        } catch (error) {
+            console.error('Error submitting:', error);
+        }
+    }
+
     return (
         <TemplatePage>
             <header>Questionaire form</header>
@@ -209,7 +248,7 @@ function HomePage() {
             {isError && <p>Oops! Error loading this questionnaire.</p>}
 
             {data && (
-                <form methods='POST' className="form-body">
+                <form methods='POST' className="form-body" onSubmit={handleSubmit}>
 
                     {data.map((response) => (
                         <div key={response.input_key} className="form-group">
