@@ -6,7 +6,7 @@ import submitRoute from './routes/formRoutes.js';
 
 const app = express();
 
-const allowedOrigins = ['https://react-with-ap-is.vercel.app','http://localhost:5173'];
+// const allowedOrigins = ['https://react-with-ap-is.vercel.app','http://localhost:5173'];
 
 app.use(cors({
   origin: function (origin, callback) {
