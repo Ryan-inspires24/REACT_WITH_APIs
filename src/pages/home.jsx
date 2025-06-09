@@ -233,6 +233,7 @@ function HomePage() {
             alert('Your response was submitted successfully!')
             console.log('Submission successful:', data);
         } catch (error) {
+            alert('Sorry, there was an error submitting.')
             console.error('Error submitting:', error);
         }
     }
