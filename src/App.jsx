@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/home';
 import LandingPage from './pages/landingPage'
+// import Admin from './pages/adminPannel';
 
 function App() {
   return (

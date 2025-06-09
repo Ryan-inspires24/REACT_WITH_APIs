@@ -230,6 +230,7 @@ function HomePage() {
             });
 
             const data = await res.json();
+            alert('Your response was submitted successfully!')
             console.log('Submission successful:', data);
         } catch (error) {
             console.error('Error submitting:', error);
@@ -258,6 +259,7 @@ function HomePage() {
                         </div>
                     ))}
                     <button type='submit' className="form-btn"> Submit</button>
+                    
 
 
                 </form>)}
