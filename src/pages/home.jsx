@@ -3,6 +3,13 @@ import TemplatePage from "../templatePage";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import '../questionairePage.css'
+import TextAreaInput from "../inputs/TextAreaInput";
+import TextInput from "../inputs/textInput";
+import RadioGroup from "../inputs/radioGroup";
+import CheckboxGroup from "../inputs/checkboxGroup";
+import BooleanQuestion from "../inputs/booleanQuestion";
+import DateTimeInput from "../inputs/dateTimeInput";
+import DropdownInput from "../inputs/dropdownInput";
 
 function HomePage() {
     const { id } = useParams();
@@ -45,172 +52,47 @@ function HomePage() {
                 input_key: name,
                 value: type === 'file' ? files[0] : value,
                 options: response.options || []
-                        }
+            }
         }))
     }
-    function displayInput(response) {
+    function displayInput(response, formData, OnChange) {
+        const inputValue = formData?.[response.input_key]?.value || '';
+
         const inputProps = {
             name: response.input_key,
             required: response.required,
-            value: formData[response.input_key]?.value || '',
+            value: inputValue,
             onChange: (e) => OnChange(e, response)
         };
 
-        if (response.options && response.options.length > 0) {
-            return handleInputType(response.type.toLowerCase(), inputProps, response.options);
-        }
-
         switch (response.type) {
             case 'FREE_TEXT':
-                return handleInputType("textarea", inputProps);
+                return <TextAreaInput {...inputProps} />;
             case 'SIMPLE_TEXT':
-                return handleInputType("text", inputProps);
+                return <TextInput {...inputProps} />;
             case 'DATE_TIME':
-                return handleInputType("date_time", inputProps);
+                return <DateTimeInput {...inputProps} />;
             case 'FILE_UPLOAD':
             case 'DOC_UPLOAD':
-                return handleInputType('upload', inputProps)
+                return <FileInput name={response.input_key} />;
+
+            case 'RATING':
+                return <RadioGroup {...inputProps} options={response.options || []} />;
+            case 'RADIOS':
+                return <RadioGroup {...inputProps} options={response.options || []} />;
+            case 'DROPDOWN':
+                return <DropdownInput {...inputProps} options={response.options || []} />
+            case 'MULTIPLE_CHOICE':
+                return <RadioGroup {...inputProps} options={response.options || []} />;
+            case 'CHECKBOXES':
+                return <CheckboxGroup {...inputProps} options={response.options || []} />;
+            case 'BOOLEAN_QUESTION':
+                return<BooleanQuestion {...inputProps} options={response.options || []}/>
             default:
-                return handleInputType("textarea", inputProps);
+                return <TextAreaInput {...inputProps} />;
         }
     }
 
-    function handleInputType(input_type, inputProps, options = []) {
-        const normalizedOptions = normalizeOptions(options);
-
-        switch (input_type) {
-            case "textarea":
-                return <textarea {...inputProps} placeholder="You can input multiple lines..." />;
-
-            case "text":
-                return <input {...inputProps} type="text" className="text-input" />;
-
-            case "date_time":
-                return <input {...inputProps} type="datetime-local" className="datetime-input" />;
-
-            case 'multiple_choice':
-            case "rating":
-            case 'radios':
-                return (
-                    <div className="single-choice-group">
-                        {normalizedOptions.map((option, index) => (
-                            <label key={index} className="single-choice-option">
-                                <input
-                                    {...inputProps}
-                                    type="radio"
-                                    value={option.value}
-                                    className="single-choice-input"
-                                />
-                                {option.label}
-                            </label>
-                        ))}
-                    </div>
-                );
-
-            case "dropdown":
-                return (
-                    <select {...inputProps} className="dropdown-input">
-                        <option value="">Select an option</option>
-                        {normalizedOptions.map((option, index) => (
-                            <option key={index} value={option.value}>{option.label}</option>
-                        ))}
-                    </select>
-                );
-            case 'checkboxes':
-                return (
-                    <div className="multiple-choice-group">
-                        {normalizedOptions.map((option, index) => (
-                            <label key={index} className="multiple-choice-option">
-                                <input
-                                    {...inputProps}
-                                    type="checkbox"
-                                    value={option.value}
-                                    className="multiple-choice-input"
-                                />
-                                {option.label}
-                            </label>
-                        ))}
-                    </div>
-                );
-            case 'upload':
-                return <input {...inputProps} className='file-input' type="file" />
-            case 'boolean_question':
-                const trueOption = normalizedOptions[0];
-                return (
-                    <div className="boolean-choice-group">
-                        <label className="boolean-option">
-                            <input
-                                {...inputProps}
-                                type="radio"
-                                value={trueOption.trueValue}
-                                name={inputProps.name}
-                                className="boolean-input"
-                            />
-                            {trueOption.trueLabel}
-                        </label>
-                        <label className="boolean-option">
-                            <input
-                                {...inputProps}
-                                type="radio"
-                                value={trueOption.falseValue}
-                                name={inputProps.name}
-                                className="boolean-input"
-                            />
-                            {trueOption.falseLabel}
-                        </label>
-                    </div>
-                );
-            default:
-                return <textarea {...inputProps} placeholder="You can input multiple lines..." />;
-
-        }
-
-
-    }
-    function normalizeOptions(options) {
-        if (!Array.isArray(options)) return [];
-
-        const result = [];
-
-        for (const opt of options) {
-            if (typeof opt === 'string') {
-                result.push({ label: opt, value: opt });
-
-            } else if (typeof opt === 'object' && opt !== null) {
-                const keys = Object.keys(opt);
-
-                if (
-                    keys.includes("trueLabel") &&
-                    keys.includes("trueValue") &&
-                    keys.includes("falseLabel") &&
-                    keys.includes("falseValue")
-                ) {
-                    result.push({
-                        trueLabel: opt.trueLabel,
-                        trueValue: opt.trueValue,
-                        falseLabel: opt.falseLabel,
-                        falseValue: opt.falseValue
-                    });
-
-                } else if ("label" in opt && "value" in opt) {
-                    result.push({ label: opt.label, value: opt.value });
-
-                } else if (keys.includes("trueLabel") && keys.includes("trueValue")) {
-                    result.push({ label: opt.trueLabel, value: opt.trueValue });
-
-                } else if (keys.includes("falseLabel") && keys.includes("falseValue")) {
-                    result.push({ label: opt.falseLabel, value: opt.falseValue });
-
-                } else {
-                    for (const [key, value] of Object.entries(opt)) {
-                        result.push({ label: key, value });
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -260,7 +142,7 @@ function HomePage() {
                         </div>
                     ))}
                     <button type='submit' className="form-btn"> Submit</button>
-                    
+
 
 
                 </form>)}
